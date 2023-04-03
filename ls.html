@@ -47,14 +47,23 @@
         background-color: rgb(220, 220, 200);
         opacity: 100%;
         position: absolute;
-        margin-left: 8%;
-        margin-top: 5%;
-        width: 75%;
+        margin-left: 25%;
+        margin-top: 10%;
+        width: 50%;
         z-index: 2;
         display: none;
-        text-align: center;
-        text-justify:inter-cluster;
+        height: 60%;
+        justify-content: center;
+        align-items: center;
+      }
+      #popup-text {
+        background-color: rgb(220, 220, 200);
+        width:70%;
+        height:80%;
         font-size: 3em;
+        border:none;
+        resize: none;
+        margin-left: 15%;
       }
     </style>
     <script>
@@ -68,11 +77,11 @@
       let totalCounts = 0
       let blueTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
       let redTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
-      function helloWorld() {
-        player = "yoshi";
-        document.getElementById("spinName").innerText = "Player: " + player
-        console.log("Hello " + player + "!")
-      }
+      // function helloWorld() {
+      //   player = "yoshi";
+      //   document.getElementById("spinName").innerText = "Player: " + player
+      //   console.log("Hello " + player + "!")
+      // }
       function spinNames() {
         let nameArr = document.getElementById("names").value.split("\n")
         nameArr = nameArr.filter(x => x != '' && !x.match(/^\s+$/))
@@ -130,24 +139,38 @@
           else {redTeam[role] = player}
         }
         counts[role]++
+        if (counts[role] >= 2) {
+          document.getElementById(role+"Swap").disabled = false
+        }
         totalCounts++
         disableButtons()
         document.getElementById("clearBtn").disabled = false
         if (totalCounts >= 10) {
           document.getElementById("resultBtn").disabled = false
+          pasteResult()
         }
       }
       function pasteResult() {
+        let longest = 0
+        for (let role in blueTeam) {
+          if (blueTeam[role].length > longest) longest = blueTeam[role].length
+        }
         let result = 
-        `Position - Blue - Red`+
-        `\nTop ${blueTeam["top"]} - ${redTeam["top"]}`+
-        `\nJg ${blueTeam["jg"]} - ${redTeam["jg"]}`+
-        `\nMid ${blueTeam["mid"]} - ${redTeam["mid"]}`+
-        `\nBot ${blueTeam["bot"]} - ${redTeam["bot"]}`+
-        `\nSup ${blueTeam["sup"]} - ${redTeam["sup"]}`
-        document.getElementById("popup-modal").value = result
+        `\nTop    ${blueTeam["top"] + spaces(longest - blueTeam["top"].length)} - ${redTeam["top"]}`+
+        `\nJg     ${blueTeam["jg"] + spaces(longest - blueTeam["jg"].length)} - ${redTeam["jg"]}`+
+        `\nMid    ${blueTeam["mid"] + spaces(longest - blueTeam["mid"].length)} - ${redTeam["mid"]}`+
+        `\nBot    ${blueTeam["bot"] + spaces(longest - blueTeam["bot"].length)} - ${redTeam["bot"]}`+
+        `\nSup    ${blueTeam["sup"] + spaces(longest - blueTeam["sup"].length)} - ${redTeam["sup"]}`
+        document.getElementById("popup-text").value = result
         document.getElementById("popup-screen").style = 'display:block'
-        document.getElementById("popup-modal").style = 'display:block'
+        document.getElementById("popup-modal").style = 'display:flex'
+      }
+      function spaces(i) {
+        let pad = ""
+        for (let j=0; j<i; j++) {
+          pad += " "
+        }
+        return pad
       }
       function hideResult() {
         document.getElementById("popup-screen").style = 'display:none'
@@ -171,14 +194,55 @@
         for (let role of roles) {
           document.getElementById("blue"+role).innerText = ""
           document.getElementById("red"+role).innerText = ""
+          document.getElementById(role+"Swap").disabled = true
         }
-        
+      }
+      function swapRole(role) {
+        let p1 = blueTeam[role]
+        blueTeam[role] = redTeam[role]
+        redTeam[role] = p1
+        document.getElementById("blue"+role).innerText = blueTeam[role]
+        document.getElementById("red"+role).innerText = redTeam[role]
+      }
+      function randAll() {
+        clearRoles()
+        let namesText = document.getElementById("names").value
+        let nameArr = document.getElementById("names").value.split("\n")
+        nameArr = nameArr.filter(x => x != '' && !x.match(/^\s+$/))
+        if (nameArr.length < 10) {
+          alert("Not enough players to randomize all roles!")
+          return
+        }
+        spinNames()
+        selectRole("top")
+        spinNames()
+        selectRole("top")
+        spinNames()
+        selectRole("jg")
+        spinNames()
+        selectRole("jg")
+        spinNames()
+        selectRole("mid")
+        spinNames()
+        selectRole("mid")
+        spinNames()
+        selectRole("bot")
+        spinNames()
+        selectRole("bot")
+        spinNames()
+        selectRole("sup")
+        spinNames()
+        selectRole("sup")
+        document.getElementById("names").value = namesText
       }
     </script>
   </head>
   <body>
     <div id="popup-screen" onclick="hideResult()"></div>
-    <textarea id="popup-modal" readonly>hi</textarea>
+    <div id="popup-modal">
+      <textarea id="popup-text" readonly style="width:70%; height:80%;">hi</textarea>
+    </div>
+    
     <article>
     <section style="flex: 8">
       <article>
@@ -220,14 +284,22 @@
           <h3 id="redbot"></h3>
           <h3 id="redsup"></h3>
         </article>
+        <article style="flex-flow: column">
+          <button id="topSwap" type="button" disabled="true" onclick="swapRole('top')">Swap</button>
+          <button id="jgSwap"  type="button" disabled="true" onclick="swapRole('jg')"> Swap</button>
+          <button id="midSwap" type="button" disabled="true" onclick="swapRole('mid')">Swap</button>
+          <button id="botSwap" type="button" disabled="true" onclick="swapRole('bot')">Swap</button>
+          <button id="supSwap" type="button" disabled="true" onclick="swapRole('sup')">Swap</button>
+        </article>
       </article>
     </section>
 
     <section style="flex:2; justify-content: start; align-items: center;">
-      <h2 id="spinName">Player: Yoshi</h2>
+      <h2 id="spinName">Player: Name</h2>
       <button id="spinBtn" type="button" onclick="spinNames()">Spin</button>
       <button style="margin-top: 1em;" id="clearBtn" type="button" disabled="true" onclick="clearRoles()">Clear</button>
       <button style="margin-top: 1em;" id="resultBtn" type="button" disabled="true" onclick="pasteResult()">Paste</button>
+      <button style="margin-top: 2em;" id="chaosBtn" type="button" onclick="randAll()">Chaos</button>      
     </section>
 
     <section style="flex:2">
