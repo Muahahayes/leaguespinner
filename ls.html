@@ -148,6 +148,7 @@
         if (totalCounts >= 10) {
           document.getElementById("resultBtn").disabled = false
           pasteResult()
+          restoreNames()
         }
       }
       function pasteResult() {
@@ -206,7 +207,6 @@
       }
       function randAll() {
         clearRoles()
-        let namesText = document.getElementById("names").value
         let nameArr = document.getElementById("names").value.split("\n")
         nameArr = nameArr.filter(x => x != '' && !x.match(/^\s+$/))
         if (nameArr.length < 10) {
@@ -233,7 +233,14 @@
         selectRole("sup")
         spinNames()
         selectRole("sup")
-        document.getElementById("names").value = namesText
+      }
+      function restoreNames() {
+        let oldnames = ''
+        let roles = ["top",'jg','mid','bot','sup']
+        for (let role of roles) {
+          oldnames += blueTeam[role] + '\n' + redTeam[role] + '\n'
+        }
+        document.getElementById("names").value = document.getElementById("names").value + '\n' + oldnames
       }
     </script>
   </head>
