@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      section {
+        display:flex; 
+        justify-content: center; 
+        flex-direction: column; 
+        align-items: center;
+      }
+      article {
+        flex: 12 100px;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-around;
+      }
+      h2 {
+        /* flex: 4 300px; */
+        padding: 1em;
+        text-align: center;
+      }
+      h1 {
+        flex: 12 300px;
+        font-size: 2em;
+        text-align: center;
+      }
+      h3 {
+        padding: 1em;
+      }
+      textarea {
+        height: 80%;
+        width: 80%;
+      }
+      #popup-screen {
+        background-color: #333;
+        opacity: 75%;
+        position: fixed;
+        margin-top: -10px;
+        margin-left: -10px;
+        width: 110%;
+        height: 110%;
+        z-index: 1;
+        display: none;
+      }
+      #popup-modal {
+        background-color: rgb(220, 220, 200);
+        opacity: 100%;
+        position: absolute;
+        margin-left: 8%;
+        margin-top: 5%;
+        width: 75%;
+        z-index: 2;
+        display: none;
+        text-align: center;
+        text-justify:inter-cluster;
+        font-size: 3em;
+      }
+    </style>
+    <script>
+      let player = ""
+      let topFilled = false
+      let jgFilled = false
+      let midFilled = false
+      let botFilled = false
+      let supFilled = false
+      let counts = {top:0,jg:0,mid:0,bot:0,sup:0}
+      let totalCounts = 0
+      let blueTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
+      let redTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
+      function helloWorld() {
+        player = "yoshi";
+        document.getElementById("spinName").innerText = "Player: " + player
+        console.log("Hello " + player + "!")
+      }
+      function spinNames() {
+        let nameArr = document.getElementById("names").value.split("\n")
+        nameArr = nameArr.filter(x => x != '' && !x.match(/^\s+$/))
+        console.log(nameArr)
+        if (nameArr.length == 0) {
+          player = ""
+          console.log("oops!")
+          alert("No Players Remaining!")
+          return;
+        }
+        let i = Math.floor(Math.random()*nameArr.length)
+        player = nameArr[i]
+        nameArr[i] = "\n"
+        nameArr = nameArr.filter(x => x != '\n')
+        document.getElementById("names").value = nameArr.join('\n')
+        document.getElementById("spinName").innerText = "Player: " + player
+        enableButtons()
+      }
+      function enableButtons() {
+        document.getElementById('spinBtn').disabled = true
+        document.getElementById('topBtn').disabled  = !(counts["top"] < 2)
+        document.getElementById('jgBtn').disabled   = !(counts["jg"] < 2)
+        document.getElementById('midBtn').disabled  = !(counts["mid"] < 2)
+        document.getElementById('botBtn').disabled  = !(counts["bot"] < 2)
+        document.getElementById('supBtn').disabled  = !(counts["sup"] < 2)
+      }
+      function disableButtons() {
+        document.getElementById('spinBtn').disabled = !(totalCounts < 10)
+        document.getElementById('topBtn').disabled  = true
+        document.getElementById('jgBtn').disabled   = true
+        document.getElementById('midBtn').disabled  = true
+        document.getElementById('botBtn').disabled  = true
+        document.getElementById('supBtn').disabled  = true
+      }
+      function selectRole(role) {
+        console.log("Assigning " + player + " to " + role)
+        let first, second
+        if (Math.random()<0.5) { //try blue first
+          first = "blue"
+          second = "red"
+        }
+        else { //try red first
+          first = "red"
+          second = "blue"
+        }
+        let nametext = document.getElementById(first+role).innerText
+        if (nametext == '') {
+          document.getElementById(first+role).innerText = player
+          if (first == "blue") {blueTeam[role] = player}
+          else {redTeam[role] = player}
+        }
+        else {
+          document.getElementById(second+role).innerText = player
+          if (first == "red") {blueTeam[role] = player}
+          else {redTeam[role] = player}
+        }
+        counts[role]++
+        totalCounts++
+        disableButtons()
+        document.getElementById("clearBtn").disabled = false
+        if (totalCounts >= 10) {
+          document.getElementById("resultBtn").disabled = false
+        }
+      }
+      function pasteResult() {
+        let result = 
+        `Position - Blue - Red`+
+        `\nTop ${blueTeam["top"]} - ${redTeam["top"]}`+
+        `\nJg ${blueTeam["jg"]} - ${redTeam["jg"]}`+
+        `\nMid ${blueTeam["mid"]} - ${redTeam["mid"]}`+
+        `\nBot ${blueTeam["bot"]} - ${redTeam["bot"]}`+
+        `\nSup ${blueTeam["sup"]} - ${redTeam["sup"]}`
+        document.getElementById("popup-modal").value = result
+        document.getElementById("popup-screen").style = 'display:block'
+        document.getElementById("popup-modal").style = 'display:block'
+      }
+      function hideResult() {
+        document.getElementById("popup-screen").style = 'display:none'
+        document.getElementById("popup-modal").style = 'display:none'
+      }
+      function clearRoles() {
+        player = ""
+        topFilled = false
+        jgFilled = false
+        midFilled = false
+        botFilled = false
+        supFilled = false
+        counts = {top:0,jg:0,mid:0,bot:0,sup:0}
+        totalCounts = 0
+        blueTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
+        redTeam = {top:"",jg:"",mid:"",bot:"",sup:""}
+        disableButtons()
+        document.getElementById("resultBtn").disabled = true
+        document.getElementById("clearBtn").disabled = true
+        let roles = ["top",'jg','mid','bot','sup']
+        for (let role of roles) {
+          document.getElementById("blue"+role).innerText = ""
+          document.getElementById("red"+role).innerText = ""
+        }
+        
+      }
+    </script>
+  </head>
+  <body>
+    <div id="popup-screen" onclick="hideResult()"></div>
+    <textarea id="popup-modal" readonly>hi</textarea>
+    <article>
+    <section style="flex: 8">
+      <article>
+        <h1>League Role Spinner</h1>
+      </article>
+      
+      <article>
+        <h2>Blue</h2>
+        <h2>-</h2>
+        <h2>Red</h2>
+      </article>
+
+      <article>
+        <article style="flex-flow: column">
+          <button id="topBtn" type="button" disabled="true" onclick="selectRole('top')">Top</button>
+          <button id="jgBtn"  type="button" disabled="true" onclick="selectRole('jg')">Jungle</button>
+          <button id="midBtn" type="button" disabled="true" onclick="selectRole('mid')">Mid</button>
+          <button id="botBtn" type="button" disabled="true" onclick="selectRole('bot')">Bot</button>
+          <button id="supBtn" type="button" disabled="true" onclick="selectRole('sup')">Support</button>
+        </article>
+        <article style="flex-flow: column;">
+          <h3 id="bluetop"></h3>
+          <h3 id="bluejg"></h3>
+          <h3 id="bluemid"></h3>
+          <h3 id="bluebot"></h3>
+          <h3 id="bluesup"></h3>
+        </article>
+        <article style="flex-flow: column;">
+          <h3>|</h3>
+          <h3>|</h3>
+          <h3>|</h3>
+          <h3>|</h3>
+          <h3>|</h3>
+        </article>
+        <article style="flex-flow: column;">
+          <h3 id="redtop"></h3>
+          <h3 id="redjg"></h3>
+          <h3 id="redmid"></h3>
+          <h3 id="redbot"></h3>
+          <h3 id="redsup"></h3>
+        </article>
+      </article>
+    </section>
+
+    <section style="flex:2; justify-content: start; align-items: center;">
+      <h2 id="spinName">Player: Yoshi</h2>
+      <button id="spinBtn" type="button" onclick="spinNames()">Spin</button>
+      <button style="margin-top: 1em;" id="clearBtn" type="button" disabled="true" onclick="clearRoles()">Clear</button>
+      <button style="margin-top: 1em;" id="resultBtn" type="button" disabled="true" onclick="pasteResult()">Paste</button>
+    </section>
+
+    <section style="flex:2">
+      <textarea id="names"></textarea>
+    </section>
+  </article>
+  </body>
+</html>
