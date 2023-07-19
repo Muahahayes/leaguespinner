@@ -184,9 +184,17 @@
         document.getElementById("names").value = nameArr.join('\n')
         document.getElementById("spinName").innerText = player
         enableButtons()
+        document.getElementById("skipName").style.display = "block"
+      }
+      function skipName() {
+        player = ""
+        document.getElementById("spinName").innerText = player
+        document.getElementById("skipName").style.display = "none"
+        disableButtons()
       }
       function enableButtons() {
         document.getElementById('spinBtn').disabled = true
+        document.getElementById('skipName').disabled = false
         document.getElementById('topBtn').disabled  = !(counts["top"] < 2)
         document.getElementById('jgBtn').disabled   = !(counts["jg"] < 2)
         document.getElementById('midBtn').disabled  = !(counts["mid"] < 2)
@@ -196,6 +204,7 @@
       }
       function disableButtons() {
         document.getElementById('spinBtn').disabled = !(totalCounts < 10)
+        document.getElementById('skipName').disabled = true
         document.getElementById('topBtn').disabled  = true
         document.getElementById('jgBtn').disabled   = true
         document.getElementById('midBtn').disabled  = true
@@ -231,6 +240,8 @@
         }
         totalCounts++
         disableButtons()
+        document.getElementById("skipName").style.display = "none"
+        document.getElementById("spinName").innerText = ""
         document.getElementById("clearBtn").disabled = false
         if (totalCounts >= 10) {
           if (counts['fill'] > 0) {
@@ -414,15 +425,17 @@
       id="sideBar" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWSideBarWCredits.png">
       <div style="position: absolute; top: 15%; right:10px">
         <img style="position: absolute; right:0px; z-index: -1;" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWChosenBox.png">
+        <input id="skipName" type="image" onclick="skipName()" alt="Skip" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/SkipButton.png"
+        style="position:absolute; right:-6px; top:-6px; z-index: 2; display:none;"/>
         <h2 id="spinName" style="z-index: 1; position: absolute; top:-18px; right:20px;">Name</h2>
       </div>
       <textarea id="names"></textarea>
       <div style="position: absolute; top: 75%; right:50px;">
         <div id="buttons" style="display:grid; grid:auto-flow / 1fr 1fr; gap:30px; height:100px;">
           <input id="spinBtn" type="image" onclick="spinNames()" alt="Spin" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWSpinButton.png"/>
-          <input id="clearBtn" type="image" onclick="clearRoles()" alt="Spin" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWClearButton.png"/>
-          <input id="resultBtn" type="image" onclick="pasteResult()" alt="Spin" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWPasteButton.png"/>
-          <input id="chaosBtn" type="image" onclick="randAll()" alt="Spin" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWChaosButton.png"/>
+          <input id="clearBtn" type="image" onclick="clearRoles()" alt="Clear" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWClearButton.png"/>
+          <input id="resultBtn" type="image" onclick="pasteResult()" alt="Paste" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWPasteButton.png"/>
+          <input id="chaosBtn" type="image" onclick="randAll()" alt="Chaos" src="https://raw.githubusercontent.com/Muahahayes/leaguespinner/master/assets/LWChaosButton.png"/>
         </div>
       </div>
     </section>
